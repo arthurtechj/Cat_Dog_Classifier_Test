@@ -1,0 +1,26 @@
+[project]
+name = "deeplearningprojectcatsdogsclassifier"
+version = "0.1.0"
+requires-python = ">=3.13"
+
+dependencies = [
+    "kagglehub>=1.0.2",
+    "scikit-learn>=1.9.0",
+    "torch",
+    "torchvision",
+    "torchaudio",
+    "matplotlib>=3.11.0",
+    "optuna>=4.9.0",
+    "tqdm>=4.68.4",
+    "pillow>=12.3.0",
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu128" }
+torchvision = { index = "pytorch-cu128" }
+torchaudio = { index = "pytorch-cu128" }

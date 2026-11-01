@@ -1,6 +1,7 @@
 import torch
 
 from utils.dataset import get_loaders
+from utils.config import DEFAULT_BATCH_SIZE, DEFAULT_EPOCHS, DEFAULT_LR
 from models.cnn import CNN
 from utils.train import train
 from utils.evaluate import evaluate
@@ -14,7 +15,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 train_loader, val_loader = get_loaders(
-    batch_size=32,
+    batch_size=DEFAULT_BATCH_SIZE,
 )
 
 model = CNN()
@@ -23,8 +24,8 @@ history, training_time = train(
     model,
     train_loader,
     val_loader,
-    epochs=10,
-    lr=0.001,
+    epochs=DEFAULT_EPOCHS,
+    lr=DEFAULT_LR,
     device=device
 )
 

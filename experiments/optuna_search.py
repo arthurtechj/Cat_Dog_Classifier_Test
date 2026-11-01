@@ -7,7 +7,8 @@ from utils.train import train
 from utils.evaluate import evaluate
 
 
-device = "cuda"
+# Search can take a while, but at least it still runs without CUDA.
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def objective(trial):

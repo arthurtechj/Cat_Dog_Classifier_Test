@@ -32,7 +32,7 @@ history, time = train(
 )
 
 print("Training time:", time)
-evaluate(model, val_loader, device)
+metrics = evaluate(model, val_loader, device)
 
 run_dir = save_run(
     model,
@@ -47,6 +47,7 @@ run_dir = save_run(
         "augmentation": False,
         "classes": CLASS_NAMES
     },
-    run_name="baseline"
+    run_name="baseline",
+    metrics=metrics
 )
 print(f"Saved run to: {run_dir}")

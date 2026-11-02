@@ -20,7 +20,9 @@ def set_seed(seed):
     torch.backends.cudnn.benchmark = False
 
 
-def save_run(model, history, training_time, settings, run_name, output_dir=OUTPUT_DIR):
+def save_run(
+    model, history, training_time, settings, run_name, metrics=None, output_dir=OUTPUT_DIR
+):
     output_dir = Path(output_dir)
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     run_dir = output_dir / f"{run_name}_{run_id}"
@@ -29,7 +31,8 @@ def save_run(model, history, training_time, settings, run_name, output_dir=OUTPU
     checkpoint = {
         "model_state_dict": model.state_dict(),
         "history": history,
-        "settings": settings
+        "settings": settings,
+        "metrics": metrics
     }
     torch.save(checkpoint, run_dir / "model.pt")
 
@@ -37,7 +40,8 @@ def save_run(model, history, training_time, settings, run_name, output_dir=OUTPU
         "saved_at": datetime.now().isoformat(timespec="seconds"),
         "training_time_seconds": training_time,
         "history": history,
-        "settings": settings
+        "settings": settings,
+        "metrics": metrics
     }
 
     with open(run_dir / "metadata.json", "w", encoding="utf-8") as file:

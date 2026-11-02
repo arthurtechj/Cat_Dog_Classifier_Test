@@ -5,12 +5,14 @@ PROJECT_DIR = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_DIR / "data"
 TRAIN_DIR = DATA_DIR / "train"
 VAL_DIR = DATA_DIR / "val"
+OUTPUT_DIR = PROJECT_DIR / "outputs"
 
 CLASS_NAMES = ("cats", "dogs")
 IMAGE_SIZE = 224
 DEFAULT_BATCH_SIZE = 32
 DEFAULT_EPOCHS = 10
 DEFAULT_LR = 0.001
+DEFAULT_SEED = 42
 
 
 def validate_dataset(data_dir=DATA_DIR):

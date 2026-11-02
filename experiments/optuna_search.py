@@ -5,13 +5,18 @@ from models.cnn import CNN
 from utils.dataset import get_loaders
 from utils.train import train
 from utils.evaluate import evaluate
+from utils.config import DEFAULT_SEED
+from utils.run import set_seed
 
 
 # Search can take a while, but at least it still runs without CUDA.
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+set_seed(DEFAULT_SEED)
 
 
 def objective(trial):
+
+    set_seed(DEFAULT_SEED + trial.number)
 
     lr = trial.suggest_float(
         "lr",

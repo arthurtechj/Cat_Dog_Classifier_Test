@@ -26,13 +26,21 @@ def run_validation(model, val_loader, loss_fn, device):
     return total_loss / len(val_loader), correct / total
 
 
-def train(model, train_loader, val_loader, epochs=5, lr=0.001, device=None):
+def train(
+    model, train_loader, val_loader, epochs=5, lr=0.001, device=None,
+    optimizer_name="Adam", trial=None
+):
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Model and batch must be on the same device or PyTorch complains.
     model.to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    if optimizer_name == "Adam":
+        optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    elif optimizer_name == "SGD":
+        optimizer = torch.optim.SGD(model.parameters(), lr=lr)
+    else:
+        raise ValueError(f"Optimizer not supported: {optimizer_name}")
     loss_fn = torch.nn.CrossEntropyLoss()
     start = time.time()
 
@@ -71,6 +79,13 @@ def train(model, train_loader, val_loader, epochs=5, lr=0.001, device=None):
             f"val loss: {val_loss:.4f} "
             f"val accuracy: {val_accuracy:.4f}"
         )
+
+        if trial is not None:
+            trial.report(val_accuracy, epoch)
+            if trial.should_prune():
+                # Stopping weak trials early saves a lot of time.
+                import optuna
+                raise optuna.TrialPruned()
 
     training_time = time.time() - start
     return history, training_time

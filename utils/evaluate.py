@@ -10,7 +10,7 @@ from sklearn.metrics import (
 from utils.config import CLASS_NAMES
 
 
-def evaluate(model, loader, device=None, class_names=CLASS_NAMES):
+def evaluate(model, loader, device=None, class_names=CLASS_NAMES, show=True):
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -57,18 +57,19 @@ def evaluate(model, loader, device=None, class_names=CLASS_NAMES):
 
     metrics["confusion_matrix"] = matrix.tolist()
 
-    print(f"Accuracy: {metrics['accuracy']:.4f}")
-    for class_name, values in metrics["classes"].items():
-        print(
-            f"{class_name} - "
-            f"precision: {values['precision']:.4f} "
-            f"recall: {values['recall']:.4f} "
-            f"f1: {values['f1']:.4f}"
-        )
+    if show:
+        print(f"Accuracy: {metrics['accuracy']:.4f}")
+        for class_name, values in metrics["classes"].items():
+            print(
+                f"{class_name} - "
+                f"precision: {values['precision']:.4f} "
+                f"recall: {values['recall']:.4f} "
+                f"f1: {values['f1']:.4f}"
+            )
 
-    print("Confusion Matrix (actual x predicted):")
-    print(" " * 12 + " ".join(f"{name:>8}" for name in class_names))
-    for class_name, row in zip(class_names, matrix):
-        print(f"{class_name:>10}  " + " ".join(f"{value:>8}" for value in row))
+        print("Confusion Matrix (actual x predicted):")
+        print(" " * 12 + " ".join(f"{name:>8}" for name in class_names))
+        for class_name, row in zip(class_names, matrix):
+            print(f"{class_name:>10}  " + " ".join(f"{value:>8}" for value in row))
 
     return metrics

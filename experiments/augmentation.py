@@ -24,6 +24,7 @@ print(f"Using device: {device}")
 set_seed(DEFAULT_SEED)
 train_loader, val_loader = get_loaders(
     batch_size=DEFAULT_BATCH_SIZE,
+    augment=True
 )
 
 model = CNN()
@@ -51,7 +52,7 @@ run_dir = save_run(
         "batch_size": DEFAULT_BATCH_SIZE,
         "epochs": DEFAULT_EPOCHS,
         "learning_rate": DEFAULT_LR,
-        "augmentation": False,
+        "augmentation": True,
         "classes": CLASS_NAMES
     },
     run_name="augmentation",

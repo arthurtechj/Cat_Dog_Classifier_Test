@@ -47,6 +47,7 @@ run_dir = save_run(
     history,
     training_time,
     {
+        "model": "cnn",
         "device": str(device),
         "seed": DEFAULT_SEED,
         "batch_size": DEFAULT_BATCH_SIZE,

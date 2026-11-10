@@ -10,6 +10,18 @@ from utils.config import (
 )
 
 
+def get_inference_transform(imagenet_normalization=False):
+    normalization = []
+    if imagenet_normalization:
+        normalization = [transforms.Normalize(IMAGENET_MEAN, IMAGENET_STD)]
+
+    return transforms.Compose([
+        transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
+        transforms.ToTensor(),
+        *normalization
+    ])
+
+
 def get_loaders(
     batch_size=DEFAULT_BATCH_SIZE, augment=False, data_dir=None,
     imagenet_normalization=False
@@ -45,11 +57,7 @@ def get_loaders(
             *normalization
         ])
 
-    val_transform = transforms.Compose([
-        transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
-        transforms.ToTensor(),
-        *normalization
-    ])
+    val_transform = get_inference_transform(imagenet_normalization)
 
     train_data = datasets.ImageFolder(train_dir, transform=train_transform)
     val_data = datasets.ImageFolder(val_dir, transform=val_transform)

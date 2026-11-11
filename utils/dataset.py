@@ -6,7 +6,7 @@ from utils.config import (
     IMAGE_SIZE,
     IMAGENET_MEAN,
     IMAGENET_STD,
-    validate_dataset
+    validate_dataset,
 )
 
 

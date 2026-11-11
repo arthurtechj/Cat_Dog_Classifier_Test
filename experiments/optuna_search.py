@@ -2,17 +2,16 @@ import json
 from datetime import datetime
 
 import optuna
-import torch
 
 from models.cnn import CNN
 from utils.config import DEFAULT_SEED, OUTPUT_DIR
 from utils.dataset import get_loaders
+from utils.device import get_device
 from utils.evaluate import evaluate
 from utils.run import set_seed
 from utils.train import train
 
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = get_device()
 set_seed(DEFAULT_SEED)
 
 

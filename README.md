@@ -1,641 +1,76 @@
-# Deep Learning Model Optimization Playground
+# Cat and Dog Classifier
 
-A deep learning project demonstrating the complete workflow of building, training, optimizing, and evaluating a Convolutional Neural Network (CNN) for image classification using **PyTorch** with **CUDA GPU acceleration**.
+A PyTorch image-classification project with a small custom CNN, image augmentation, Optuna search, and a pretrained ResNet-18 option.
 
-The project uses the **Cats vs Dogs** dataset and explores several stages of a real-world deep learning pipeline:
+It uses CUDA when available and falls back to CPU when it is not.
 
-- Building a baseline CNN classifier
-- Training on GPU using CUDA
-- Feature engineering through image augmentation
-- Hyperparameter optimization with Optuna
-- Model evaluation using multiple performance metrics
+## Dataset layout
 
----
+Put images in these folders. Both splits must contain `cats` and `dogs` directories.
 
-# Technologies Used
-
-- Python 3.13
-- PyTorch
-- Torchvision
-- CUDA (GPU Training)
-- Optuna
-- Scikit-Learn
-- Matplotlib
-- tqdm
-
----
-
-# Project Structure
-
-```
-DeepLearningProjectCatsDogsClassifier/
-
-│
-├── data/
-│   ├── train/
-│   │   ├── cats/
-│   │   └── dogs/
-│   │
-│   └── val/
-│       ├── cats/
-│       └── dogs/
-│
-├── models/
-│   └── cnn.py
-│
-├── utils/
-│   ├── dataset.py
-│   ├── train.py
-│   └── evaluate.py
-│
-├── experiments/
-│   ├── augmentation.py
-│   └── optuna_search.py
-│
-├── outputs/
-│
-├── main.py
-│
-└── README.md
+```text
+data/
+  train/
+    cats/
+    dogs/
+  val/
+    cats/
+    dogs/
 ```
 
----
+## Setup
 
-# General Workflow
-
-The project follows a typical deep learning workflow.
-
-```
-Dataset
-
-      │
-
-      ▼
-
-Image Preprocessing
-
-      │
-
-      ▼
-
-CNN Architecture
-
-      │
-
-      ▼
-
-GPU Training
-
-      │
-
-      ▼
-
-Evaluation
-
-      │
-
-      ▼
-
-Feature Engineering
-
-      │
-
-      ▼
-
-Hyperparameter Optimization
-
-      │
-
-      ▼
-
-Final Evaluation
+```powershell
+uv sync --group dev
 ```
 
----
+## Train models
 
-# Dataset
-
-The dataset consists of two classes:
-
-- Cats
-- Dogs
-
-Training images are stored inside:
-
-```
-data/train/
-```
-
-Validation images are stored inside:
-
-```
-data/val/
-```
-
-PyTorch's `ImageFolder` automatically assigns labels based on folder names.
-
----
-
-# CNN Architecture
-
-The model is implemented inside:
-
-```
-models/cnn.py
-```
-
-Architecture:
-
-```
-Input Image (224×224×3)
-
-        │
-
-Conv2D
-
-        │
-
-ReLU
-
-        │
-
-MaxPooling
-
-        │
-
-Conv2D
-
-        │
-
-ReLU
-
-        │
-
-MaxPooling
-
-        │
-
-Conv2D
-
-        │
-
-ReLU
-
-        │
-
-MaxPooling
-
-        │
-
-Flatten
-
-        │
-
-Fully Connected Layer
-
-        │
-
-Dropout
-
-        │
-
-Output Layer
-
-        │
-
-Cat / Dog
-```
-
-The convolutional layers automatically learn image features such as:
-
-- edges
-- textures
-- shapes
-- facial features
-- fur patterns
-
-without requiring manual feature extraction.
-
----
-
-# GPU Training
-
-Training is performed entirely on the NVIDIA GPU using CUDA.
-
-The model and tensors are moved to the GPU:
-
-```python
-model.to("cuda")
-
-images = images.to("cuda")
-
-labels = labels.to("cuda")
-```
-
-GPU acceleration significantly reduces training time compared to CPU execution.
-
----
-
-# Baseline Experiment
-
-File:
-
-```
-main.py
-```
-
-The baseline experiment trains the CNN without any image augmentation.
-
-Original images are simply:
-
-- resized to 224×224
-- converted into tensors
-
-The following values are recorded:
-
-- Training Loss
-- Training Time
-- Accuracy
-- Precision
-- Recall
-- F1 Score
-- Confusion Matrix
-
-This experiment establishes a performance baseline for future improvements.
-
----
-
-# Dataset Loader
-
-File:
-
-```
-utils/dataset.py
-```
-
-Responsible for:
-
-- loading training dataset
-- loading validation dataset
-- applying transformations
-- creating DataLoaders
-- batching images
-
-When augmentation is disabled:
-
-```
-Resize
-
-↓
-
-Tensor
-```
-
-When augmentation is enabled:
-
-```
-Resize
-
-↓
-
-Random Rotation
-
-↓
-
-Random Crop
-
-↓
-
-Horizontal Flip
-
-↓
-
-Color Jitter
-
-↓
-
-Tensor
-```
-
----
-
-# Training Loop
-
-File:
-
-```
-utils/train.py
-```
-
-Responsible for training the CNN.
-
-Each epoch consists of:
-
-```
-Load Batch
-
-↓
-
-Forward Pass
-
-↓
-
-Loss Calculation
-
-↓
-
-Backpropagation
-
-↓
-
-Weight Update
-
-↓
-
-Next Batch
-```
-
-This process repeats until every image has been processed once.
-
-One complete pass over the dataset is called an **epoch**.
-
-During training the project records:
-
-- training loss
-- total training time
-
----
-
-# Evaluation
-
-File:
-
-```
-utils/evaluate.py
-```
-
-The trained model is evaluated using:
-
-### Accuracy
-
-Percentage of correctly classified images.
-
----
-
-### Precision
-
-Of all images predicted as a given class,
-how many predictions were correct.
-
----
-
-### Recall
-
-Of all actual images belonging to a class,
-how many were correctly detected.
-
----
-
-### F1 Score
-
-Harmonic mean of precision and recall.
-
-Useful when balancing false positives and false negatives.
-
----
-
-### Confusion Matrix
-
-Displays classification performance:
-
-```
-                Predicted
-
-             Cat      Dog
-
-Actual Cat   TP       FN
-
-Actual Dog   FP       TN
-```
-
-This helps identify which class is more difficult to classify.
-
----
-
-# Feature Engineering
-
-File:
-
-```
-experiments/augmentation.py
-```
-
-This experiment evaluates whether image augmentation improves model performance.
-
-Random augmentations include:
-
-- Random Rotation
-- Horizontal Flip
-- Random Crop
-- Color Jitter
-
-Example:
-
-Original image
-
-↓
-
-Rotated
-
-↓
-
-Flipped
-
-↓
-
-Brighter
-
-↓
-
-Cropped
-
-Although the original dataset remains unchanged,
-the model sees a different variation of the same image during each training epoch.
-
-This improves generalization and reduces overfitting.
-
-Results are compared against the baseline model.
-
----
-
-# Hyperparameter Optimization
-
-File:
-
-```
-experiments/optuna_search.py
-```
-
-Instead of manually testing hyperparameters,
-Optuna automatically performs multiple training runs.
-
-Parameters searched include:
-
-- Learning Rate
-- Batch Size
-- Dropout
-- Optimizer
-
-Each trial trains a new CNN using a different parameter combination.
-
-Example:
-
-Trial 1
-
-```
-Learning Rate = 0.001
-
-Batch Size = 32
-
-Optimizer = Adam
-
-Accuracy = 79%
-```
-
-Trial 2
-
-```
-Learning Rate = 0.0005
-
-Batch Size = 64
-
-Optimizer = SGD
-
-Accuracy = 82%
-```
-
-...
-
-After all trials, Optuna reports the best-performing configuration.
-
----
-
-# Experiments
-
-The project consists of three experiments.
-
-## 1. Baseline CNN
-
-```
+```powershell
+# Basic CNN
 uv run main.py
-```
 
-Purpose:
-
-Train a CNN without augmentation.
-
-Measures:
-
-- Loss
-- Accuracy
-- Precision
-- Recall
-- F1
-- Training Time
-
----
-
-## 2. Image Augmentation
-
-```
+# CNN with augmentation
 uv run experiments/augmentation.py
-```
 
-Purpose:
+# Pretrained ResNet-18, training only its new classification head first
+uv run experiments/transfer_learning.py
 
-Evaluate the impact of feature engineering.
-
-Comparison:
-
-Baseline
-
-↓
-
-Augmented Images
-
-↓
-
-Performance Difference
-
----
-
-## 3. Hyperparameter Optimization
-
-```
+# Hyperparameter search; can resume using outputs/optuna_study.db
 uv run experiments/optuna_search.py
 ```
 
-Purpose:
+Every training run writes a timestamped folder in `outputs/` with the checkpoint, metrics, training history, and a loss/accuracy plot.
 
-Automatically search for better hyperparameters.
+## Predict images
 
-The best configuration can later be used to retrain the final model.
+```powershell
+# One image
+uv run predict.py path\to\image.jpg --checkpoint outputs\baseline_...\model.pt
 
----
-
-# Typical Output
-
-Training:
-
-```
-Epoch 1 Loss: 0.61
-
-Epoch 2 Loss: 0.47
-
-Epoch 3 Loss: 0.34
-
-...
-
-Epoch 10 Loss: 0.03
+# A folder of images
+uv run predict.py path\to\images --checkpoint outputs\resnet18_head_...\model.pt
 ```
 
-Evaluation:
+The command prints the predicted class and its confidence.
 
-```
-Accuracy: 0.81
+## Web interface
 
-Precision: 0.82
-
-Recall: 0.80
-
-F1 Score: 0.81
-
-Confusion Matrix:
-
-[[2050 450]
- [510 1990]]
+```powershell
+uv run app.py
 ```
 
----
+Open the local URL shown in the terminal, upload an image, paste the path to `model.pt`, then click **Classify**.
 
-# Learning Outcomes
+## Tests and checks
 
-This project demonstrates understanding of:
+```powershell
+uv run ruff check .
+uv run pytest
+```
 
-- Convolutional Neural Networks (CNNs)
-- GPU-accelerated Deep Learning
-- PyTorch training workflow
-- Image preprocessing
-- Feature engineering through augmentation
-- Hyperparameter optimization
-- Deep learning evaluation metrics
-- Experiment comparison
-- Model performance analysis
+GitHub Actions runs the same lint and test commands on pushes and pull requests.
 
----
+## Current baseline
 
-# Conclusion
-
-This project follows a complete deep learning workflow starting from a baseline CNN, improving the model through image augmentation, optimizing hyperparameters using Optuna, and evaluating performance using multiple classification metrics.
-
-The implementation demonstrates practical experience with modern deep learning development using PyTorch and CUDA, while following an experimental approach commonly used in real-world machine learning projects.
+The original CNN baseline recorded **78.94% validation accuracy**. Run the augmentation and ResNet experiments to compare new results; their exact metrics and plots are saved under `outputs/`.

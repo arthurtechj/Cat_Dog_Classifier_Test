@@ -1,4 +1,3 @@
-import torch
 
 from models.cnn import CNN
 from utils.config import (
@@ -6,16 +5,16 @@ from utils.config import (
     DEFAULT_BATCH_SIZE,
     DEFAULT_EPOCHS,
     DEFAULT_LR,
-    DEFAULT_SEED
+    DEFAULT_SEED,
 )
 from utils.dataset import get_loaders
+from utils.device import get_device
 from utils.evaluate import evaluate
-from utils.train import train
 from utils.run import save_run, set_seed
-
+from utils.train import train
 
 # It falls back to CPU if CUDA is not installed on this machine.
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = get_device()
 print(f"Using device: {device}")
 
 set_seed(DEFAULT_SEED)

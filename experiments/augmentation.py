@@ -1,23 +1,23 @@
-import torch
 
-from utils.dataset import get_loaders
+from models.cnn import CNN
 from utils.config import (
     CLASS_NAMES,
     DEFAULT_BATCH_SIZE,
     DEFAULT_EPOCHS,
     DEFAULT_LR,
-    DEFAULT_SEED
+    DEFAULT_SEED,
 )
-from models.cnn import CNN
-from utils.train import train
+from utils.dataset import get_loaders
+from utils.device import get_device
 from utils.evaluate import evaluate
 from utils.run import save_run, set_seed
+from utils.train import train
 
 print("=" * 50)
 print("Experiment: Image Augmentation")
 print("=" * 50)
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = get_device()
 # This lets me run the same experiment on a normal laptop too.
 print(f"Using device: {device}")
 

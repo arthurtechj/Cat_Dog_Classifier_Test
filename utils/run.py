@@ -4,8 +4,8 @@ import random
 from datetime import datetime
 from pathlib import Path
 
-import torch
 import matplotlib
+import torch
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt

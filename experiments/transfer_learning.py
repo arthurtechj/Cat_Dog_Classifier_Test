@@ -1,4 +1,3 @@
-import torch
 
 from models.resnet import ResNet18Classifier
 from utils.config import (
@@ -6,19 +5,19 @@ from utils.config import (
     DEFAULT_BATCH_SIZE,
     DEFAULT_LR,
     DEFAULT_SEED,
-    TRANSFER_EPOCHS
+    TRANSFER_EPOCHS,
 )
 from utils.dataset import get_loaders
+from utils.device import get_device
 from utils.evaluate import evaluate
 from utils.run import save_run, set_seed
 from utils.train import train
-
 
 print("=" * 50)
 print("Experiment: ResNet18 Transfer Learning")
 print("=" * 50)
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = get_device()
 print(f"Using device: {device}")
 
 set_seed(DEFAULT_SEED)

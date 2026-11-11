@@ -3,6 +3,8 @@ import time
 import torch
 from tqdm import tqdm
 
+from utils.device import get_device
+
 
 def run_validation(model, val_loader, loss_fn, device):
     model.eval()
@@ -31,7 +33,7 @@ def train(
     optimizer_name="Adam", trial=None
 ):
     if device is None:
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = get_device()
 
     # Model and batch must be on the same device or PyTorch complains.
     model.to(device)

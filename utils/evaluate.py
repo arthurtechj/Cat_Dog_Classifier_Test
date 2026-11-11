@@ -1,18 +1,19 @@
 import torch
 from sklearn.metrics import (
     accuracy_score,
+    confusion_matrix,
+    f1_score,
     precision_score,
     recall_score,
-    f1_score,
-    confusion_matrix
 )
 
 from utils.config import CLASS_NAMES
+from utils.device import get_device
 
 
 def evaluate(model, loader, device=None, class_names=CLASS_NAMES, show=True):
     if device is None:
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = get_device()
 
     model.to(device)
     model.eval()

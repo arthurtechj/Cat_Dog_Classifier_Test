@@ -8,7 +8,7 @@ from models.cnn import CNN
 from models.resnet import ResNet18Classifier
 from utils.config import CLASS_NAMES
 from utils.dataset import get_inference_transform
-
+from utils.device import get_device
 
 SUPPORTED_IMAGES = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 
@@ -70,10 +70,17 @@ def load_model(checkpoint_path, device):
 
 def predict_image(image_path, model, class_names, transform, device):
     try:
-        image = Image.open(image_path).convert("RGB")
+        with Image.open(image_path) as loaded_image:
+            image = loaded_image.convert("RGB")
     except OSError as error:
         raise ValueError(f"Could not read image: {image_path}") from error
 
+    result = predict_pil_image(image, model, class_names, transform, device)
+    result["image"] = str(image_path)
+    return result
+
+
+def predict_pil_image(image, model, class_names, transform, device):
     image_tensor = transform(image).unsqueeze(0).to(device)
 
     with torch.no_grad():
@@ -81,7 +88,6 @@ def predict_image(image_path, model, class_names, transform, device):
 
     class_index = probabilities.argmax().item()
     return {
-        "image": str(image_path),
         "prediction": class_names[class_index],
         "confidence": probabilities[class_index].item()
     }
@@ -93,7 +99,7 @@ def main():
     parser.add_argument("--checkpoint", required=True, help="Path to model.pt")
     args = parser.parse_args()
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = get_device()
     print(f"Using device: {device}")
 
     model, class_names, transform = load_model(args.checkpoint, device)

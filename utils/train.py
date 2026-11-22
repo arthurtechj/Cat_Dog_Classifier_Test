@@ -1,4 +1,5 @@
 import time
+from copy import deepcopy
 
 import torch
 from tqdm import tqdm
@@ -30,7 +31,7 @@ def run_validation(model, val_loader, loss_fn, device):
 
 def train(
     model, train_loader, val_loader, epochs=5, lr=0.001, device=None,
-    optimizer_name="Adam", trial=None
+    optimizer_name="Adam", trial=None, early_stopping_patience=None
 ):
     if device is None:
         device = get_device()
@@ -51,6 +52,10 @@ def train(
         "val_loss": [],
         "val_accuracy": []
     }
+    best_val_loss = float("inf")
+    best_model_state = None
+    best_epoch = 0
+    epochs_without_improvement = 0
 
     for epoch in range(epochs):
         model.train()
@@ -82,12 +87,33 @@ def train(
             f"val accuracy: {val_accuracy:.4f}"
         )
 
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            best_model_state = deepcopy(model.state_dict())
+            best_epoch = epoch + 1
+            epochs_without_improvement = 0
+        else:
+            epochs_without_improvement += 1
+
         if trial is not None:
             trial.report(val_accuracy, epoch)
             if trial.should_prune():
                 # Stopping weak trials early saves a lot of time.
                 import optuna
                 raise optuna.TrialPruned()
+
+        if (
+            early_stopping_patience is not None
+            and epochs_without_improvement >= early_stopping_patience
+        ):
+            print(f"Stopped early. Best validation loss was at epoch {best_epoch}.")
+            break
+
+    if best_model_state is not None:
+        model.load_state_dict(best_model_state)
+
+    history["best_epoch"] = best_epoch
+    history["best_val_loss"] = best_val_loss
 
     training_time = time.time() - start
     return history, training_time

@@ -5,6 +5,7 @@ from utils.config import (
     DEFAULT_BATCH_SIZE,
     DEFAULT_LR,
     DEFAULT_SEED,
+    EARLY_STOPPING_PATIENCE,
     TRANSFER_EPOCHS,
 )
 from utils.dataset import get_loaders
@@ -35,7 +36,8 @@ history, training_time = train(
     val_loader,
     epochs=TRANSFER_EPOCHS,
     lr=DEFAULT_LR,
-    device=device
+    device=device,
+    early_stopping_patience=EARLY_STOPPING_PATIENCE
 )
 
 print(f"\nTraining Time: {training_time:.2f} seconds\n")
@@ -54,6 +56,7 @@ run_dir = save_run(
         "batch_size": DEFAULT_BATCH_SIZE,
         "epochs": TRANSFER_EPOCHS,
         "learning_rate": DEFAULT_LR,
+        "early_stopping_patience": EARLY_STOPPING_PATIENCE,
         "augmentation": True,
         "imagenet_normalization": True,
         "classes": CLASS_NAMES

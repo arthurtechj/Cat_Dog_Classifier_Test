@@ -40,7 +40,7 @@ uv run experiments/transfer_learning.py
 uv run experiments/optuna_search.py
 ```
 
-Every training run writes a timestamped folder in `outputs/` with the checkpoint, metrics, training history, and a loss/accuracy plot.
+Every training run writes a timestamped folder in `outputs/` with the checkpoint, metrics, training history, and a loss/accuracy plot. Training also restores the best validation-loss checkpoint and stops after three non-improving epochs.
 
 ## Predict images
 
